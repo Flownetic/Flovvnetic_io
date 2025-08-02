@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sherlock Holmes Chatbot</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #5c3c21;
+            text-align: center;
+            border-bottom: 2px solid #5c3c21;
+            padding-bottom: 10px;
+        }
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: auto;
+            border-bottom-right-radius: 0;
+        }
+        .bot-message {
+            background-color: #f1f1f1;
+            margin-right: auto;
+            border-bottom-left-radius: 0;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+        #user-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #5c3c21;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4a3121;
+        }
+        .typing-indicator {
+            display: none;
+            color: #666;
+            font-style: italic;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sherlock Holmes Chatbot</h1>
+        <div id="loading" class="loading">Loading Sherlock Holmes stories...</div>
+        
+        <div class="chat-container" id="chat-container" style="display: none;">
+            <div class="message bot-message">
+                Hello! I'm your Sherlock Holmes assistant. You can ask me about any of the cases in "The Adventures of Sherlock Holmes", including:
+                <ul>
+                    <li>A Scandal in Bohemia</li>
+                    <li>The Red-Headed League</li>
+                    <li>A Case of Identity</li>
+                    <li>The Boscombe Valley Mystery</li>
+                    <li>And others...</li>
+                </ul>
+                What would you like to know?
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typing">Holmes is thinking...</div>
+        
+        <div class="input-area" id="input-area" style="display: none;">
+            <input type="text" id="user-input" placeholder="Ask about a case or character...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variable to store the Sherlock Holmes text
+        let sherlockText = '';
+        
+        // DOM elements
+        const chatContainer = document.getElementById('chat-container');
+        const inputArea = document.getElementById('input-area');
+        const loadingElement = document.getElementById('loading');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const typingIndicator = document.getElementById('typing');
+        
+        // Load the Sherlock Holmes text from external file
+        fetch('sherlock.txt')
+            .then(response => response.text())
+            .then(text => {
+                sherlockText = text;
+                loadingElement.style.display = 'none';
+                chatContainer.style.display = 'block';
+                inputArea.style.display = 'flex';
+            })
+            .catch(error => {
+                console.error('Error loading Sherlock Holmes text:', error);
+                loadingElement.textContent = 'Failed to load stories. Please make sure sherlock.txt is in the same directory.';
+            });
+        
+        // Function to add a message to the chat
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.textContent = text;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Function to process user questions
+        function processQuestion(question) {
+            typingIndicator.style.display = 'block';
+            
+            // Simulate thinking time
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                
+                // Simple keyword matching for demonstration
+                const lowerQuestion = question.toLowerCase();
+                
+                if (lowerQuestion.includes('scandal in bohemia') || lowerQuestion.includes('irene adler')) {
+                    const answer = "In 'A Scandal in Bohemia', Sherlock Holmes is hired by the King of Bohemia to retrieve a compromising photograph from Irene Adler, an opera singer and his former lover. Holmes is outwitted by Adler, who recognizes his disguise and leaves the country with her new husband, but Holmes keeps her photograph as a reminder of her intelligence.";
+                    addMessage(answer, false);
+                }
+                else if (lowerQuestion.includes('red-headed league') || lowerQuestion.includes('jabez wilson')) {
+                    const answer = "In 'The Red-Headed League', Jabez Wilson is hired for a mysterious job copying the Encyclopedia Britannica, which turns out to be a ruse to keep him away from his shop while criminals tunnel into a bank vault. Holmes deduces the plot and prevents the robbery.";
+                    addMessage(answer, false);
+                }
+                else if (lowerQuestion.includes('boscombe valley') || lowerQuestion.includes('charles mccarthy')) {
+                    const answer = "In 'The Boscombe Valley Mystery', Holmes investigates the murder of Charles McCarthy, whose son James is accused. Holmes discovers the real killer is John Turner, a former criminal from Australia who was being blackmailed by McCarthy.";
+                    addMessage(answer, false);
+                }
+                else if (lowerQuestion.includes('case of identity') || lowerQuestion.includes('hosmer angel')) {
+                    const answer = "In 'A Case of Identity', Mary Sutherland is deceived by her stepfather who disguises himself as Hosmer Angel to prevent her marriage and keep control of her money. Holmes deduces the scheme but cannot take legal action.";
+                    addMessage(answer, false);
+                }
+                else if (lowerQuestion.includes('who is sherlock holmes')) {
+                    const answer = "Sherlock Holmes is a fictional consulting detective created by Sir Arthur Conan Doyle. Known for his astute logical reasoning, forensic science skills, and eccentric personality, Holmes solves difficult cases in London with his friend and biographer Dr. John Watson.";
+                    addMessage(answer, false);
+                }
+                else if (lowerQuestion.includes('who is dr watson')) {
+                    const answer = "Dr. John H. Watson is Sherlock Holmes's friend, assistant, and biographer. A former army doctor wounded in the Second Anglo-Afghan War, Watson shares rooms with Holmes at 221B Baker Street and documents many of his cases.";
+                    addMessage(answer, false);
+                }
+                else {
+                    // If no specific match, search the text for relevant content
+                    const searchResults = searchSherlockText(question);
+                    if (searchResults) {
+                        addMessage(searchResults, false);
+                    } else {
+                        addMessage("I'm sorry, I couldn't find information about that in the Sherlock Holmes stories. Could you try asking about a specific case or character?", false);
+                    }
+                }
+            }, 1000);
+        }
+        
+        // Function to search the Sherlock Holmes text for relevant content
+        function searchSherlockText(query) {
+            const lowerQuery = query.toLowerCase();
+            const paragraphs = sherlockText.split('\n\n');
+            
+            // Look for paragraphs that contain the query words
+            for (const paragraph of paragraphs) {
+                if (paragraph.toLowerCase().includes(lowerQuery) && paragraph.length > 50 && paragraph.length < 500) {
+                    return paragraph;
+                }
+            }
+            
+            // If no paragraph matches, try to find the most relevant section
+            const words = lowerQuery.split(' ');
+            let bestMatch = '';
+            let bestScore = 0;
+            
+            for (const paragraph of paragraphs) {
+                const lowerPara = paragraph.toLowerCase();
+                let score = 0;
+                
+                for (const word of words) {
+                    if (lowerPara.includes(word)) {
+                        score++;
+                    }
+                }
+                
+                if (score > bestScore && paragraph.length > 50 && paragraph.length < 500) {
+                    bestScore = score;
+                    bestMatch = paragraph;
+                }
+            }
+            
+            return bestMatch || null;
+        }
+        
+        // Event listeners
+        sendButton.addEventListener('click', () => {
+            const question = userInput.value.trim();
+            if (question) {
+                addMessage(question, true);
+                userInput.value = '';
+                processQuestion(question);
+            }
+        });
+        
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
